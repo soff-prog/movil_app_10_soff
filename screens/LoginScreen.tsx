@@ -10,68 +10,130 @@ export default function LoginScreen({navigation}: any) {
   const [contrasenia, setcontrasenia] = useState("")
 
   function login(){
+
+    if(correo=="" || contrasenia==""){
+      Alert.alert(
+        "Campos vacíos",
+        "Completa todos los campos."
+      )
+      return
+    }
+
     signInWithEmailAndPassword(auth, correo, contrasenia)
       .then((userCredential) => {
-      // Signed in 
+
       const user = userCredential.user;
       console.log(user)
+
+      Alert.alert(
+        "Bienvenido",
+        "Inicio de sesión exitoso."
+      )
+
       navigation.navigate("Tabs")
-     // ...
+
     })
     .catch((error) => {
+
       const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode);
-      Alert.alert(errorCode, errorMessage)
 
       if(errorCode == "auth/invalid-email"){
-        Alert.alert("Correo invalido", "Verificar el campo de correo")
-      }else if(errorCode == "auth/missing-password")
-        Alert.alert("Contrasela incorrecta", "Verificar el campo de contraseña")
-      else{
-        Alert.alert("Error","Verifica credenciales")
+        Alert.alert(
+          "Correo inválido",
+          "Verifica el correo ingresado."
+        )
+      }else if(errorCode == "auth/missing-password"){
+        Alert.alert(
+          "Contraseña",
+          "Ingresa la contraseña."
+        )
+      }else if(errorCode == "auth/invalid-credential"){
+        Alert.alert(
+          "Credenciales incorrectas",
+          "Correo o contraseña incorrectos."
+        )
+      }else{
+        Alert.alert(
+          "Error",
+          "No fue posible iniciar sesión."
+        )
       }
 
     });
   }
 
   function restablecerContrasenia(){
+
+    if(correo==""){
+      Alert.alert(
+        "Correo requerido",
+        "Ingresa tu correo para restablecer la contraseña."
+      )
+      return
+    }
+
     sendPasswordResetEmail(auth, correo)
       .then(() => {
-        // Password reset email sent!
-        Alert.alert("Mensaje", "Se envio un mensaje a tu correo")
+
+        Alert.alert(
+          "Correo enviado",
+          "Revisa tu bandeja de entrada."
+        )
+
     })
     .catch((error) => {
+
       const errorCode = error.code;
-      const errorMessage = error.message;
-      // ..
+
+      if(errorCode=="auth/invalid-email"){
+        Alert.alert(
+          "Correo inválido",
+          "Verifica el correo ingresado."
+        )
+      }else{
+        Alert.alert(
+          "Error",
+          "No fue posible enviar el correo."
+        )
+      }
+
     });
   }
 
   return (
     <View>
       <Text>LoginScreen</Text>
+
       <TextInput
         placeholder='Ingresar Correo'
         style={estiloGlobal.input}
         onChangeText={setcorreo}
       />
+
       <TextInput
         placeholder='Ingresar Contrasenia'
         style={estiloGlobal.input}
+        secureTextEntry={true}
         onChangeText={setcontrasenia}
       />
 
-      <Button 
-        title='Login' 
+      <Button
+        title='Login'
         onPress={login}
-      ></Button>
-      <Text 
+      />
+
+      <Text
         onPress={()=>navigation.navigate("Registro")}
         style={{fontSize:20}}
-      >Registrate aqui</Text>
+      >
+        Registrate aqui
+      </Text>
 
-      <Button title='olvidaste la contraseña?' onPress={restablecerContrasenia}/>
+      <Button
+        title='olvidaste la contraseña?'
+        onPress={restablecerContrasenia}
+      />
+
     </View>
   )
 }
